@@ -1,0 +1,17 @@
+<template name='postItem'>
+  <view class='post-container'>
+      <view class='post-auther-date'>
+        <image class='post-auther' mode='aspectFill' src='{{avater}}'></image>
+        <text class='post-date'>{{date}}</text>
+      </view>
+      <text class='post-title'>{{title}}</text>
+      <image class='post-image' mode='aspectFill' src='{{imgSrc}}'></image>
+      <text class='post-content'>{{content}}</text>
+      <view class='post-like'>
+        <image class='post-like-image' mode='scaleToFill' src='/images/icon/likeBtn.png'></image>
+        <text class='post-like-font'>{{collection}}</text>
+        <image class='post-like-image'  mode='scaleToFill' src='/images/icon/talk.png'></image>
+        <text class='post-like-font'>{{reading}}</text>
+      </view>
+    </view>
+</template>

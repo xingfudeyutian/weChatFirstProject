@@ -1,0 +1,23 @@
+<import src="post-item/post-item-template.wxml" />
+
+<view>
+  <swiper indicator-dots='true' autoplay='true' interval='2000' indicator-color='white'>
+    <swiper-item>
+      <image mode='scaleToFill' src='/images/posts/1.jpg'></image>
+    </swiper-item>
+    <swiper-item>
+      <image mode='scaleToFill' src='/images/posts/2.jpg'></image>
+    </swiper-item>
+    <swiper-item>
+      <image mode='scaleToFill' src='/images/posts/3.jpg'></image>
+    </swiper-item>
+  </swiper>
+
+
+ 
+  <block wx:for="{{postList}}" wx:for-item="item">
+  <view catchtap='onPostTap' data-postId = "{{item.postId}}" >
+    <template is='postItem' data='{{...item}}' />
+  </view>
+  </block>
+</view>
