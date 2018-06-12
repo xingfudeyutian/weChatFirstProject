@@ -18,9 +18,33 @@ Page({
     var postData = postsData.postList[postId];
     this.data.currentPostId = postId;
     this.setData({
-      postData:postData
-    })
+      postData: postData
+    });
+    var postsCollected = wx.getStorageSync('posts_collected')
+    if (postsCollected) {
+      var postCollected = postsCollected[postId]
+      if(postCollected){
+        this.setData({
+          collected: postCollected
+        });
+      }
+    } else {
+      var postsCollected = {};
+      postsCollected[postId] = false;
+      wx.setStorageSync('posts_collected', postsCollected);
+    }
   },
+  onCollectionTap: function (event) {
+    var postsColleted = wx.getStorageSync('posts_collected');
+    var postColleted = postsColleted[this.data.currentPostId];
+    postColleted = !postColleted;
+    postsColleted[this.data.currentPostId] = postColleted;
+    wx.setStorageSync('posts_collected', postsColleted);
+    this.setData({
+      collected:postColleted
+    });
+  },
+
 
   /**
    * 生命周期函数--监听页面初次渲染完成
