@@ -23,7 +23,7 @@ Page({
     var postsCollected = wx.getStorageSync('posts_collected')
     if (postsCollected) {
       var postCollected = postsCollected[postId]
-      if(postCollected){
+      if (postCollected) {
         this.setData({
           collected: postCollected
         });
@@ -34,17 +34,50 @@ Page({
       wx.setStorageSync('posts_collected', postsCollected);
     }
   },
+
   onCollectionTap: function (event) {
-    var postsColleted = wx.getStorageSync('posts_collected');
-    var postColleted = postsColleted[this.data.currentPostId];
-    postColleted = !postColleted;
-    postsColleted[this.data.currentPostId] = postColleted;
-    wx.setStorageSync('posts_collected', postsColleted);
-    this.setData({
-      collected:postColleted
-    });
+    var postsCollected = wx.getStorageSync('posts_collected');
+    var postCollected = postsCollected[this.data.currentPostId];
+    postCollected = !postCollected;
+    postsCollected[this.data.currentPostId] = postCollected;
+    // this.showModal(postsCollected, postCollected);
+    this.showToast(postsCollected, postCollected);
+  },
+  showModal: function (postsCollected, postCollected) {
+    var that = this;
+    wx.showModal({
+      title: '收藏',
+      content: postCollected? '收藏改文章':'取消收藏改文章',
+      showCancel: 'true',
+      cancelText: '取消',
+      cancelColor: '#333',
+      confirmText: '确认',
+      confirmColor: '#405f80',
+      success: function (res) {
+        if (res.confirm) {
+          wx.setStorageSync('posts_collected', postsCollected);
+          that.setData({
+            collected: postCollected
+          })
+        }
+      }
+    })
   },
 
+
+  showToast: function (postsCollected, postCollected) {
+    wx.setStorageSync('posts_collected', postsCollected);
+    this.setData({
+      collected: postCollected
+    });
+
+    wx.showToast({
+      title: postCollected ? '收藏成功' : '取消成功',
+      duration: 1000,
+      icon: "success"
+    })
+
+  },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
