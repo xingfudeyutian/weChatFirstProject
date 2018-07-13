@@ -1,19 +1,20 @@
 // pages/posts/post-detail/post-detail.js
 var postsData = require('../../../data/post-data.js')
-
+var app = getApp();
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
+  isPlayingMusic : false
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    var globalData = app.globalData;
     var postId = options.id;
     var postData = postsData.postList[postId];
     this.data.currentPostId = postId;
@@ -33,6 +34,33 @@ Page({
       postsCollected[postId] = false;
       wx.setStorageSync('posts_collected', postsCollected);
     }
+
+    if (app.globalData.g_isPlayingMusic && app.globalData.g_currentMusicPostId === postId){
+    this.setData({
+      isPlayingMusic: true
+    })
+  }
+
+    this.setAudioMonitor();
+  },
+
+  setAudioMonitor: function(){
+    var that = this;
+    wx.onBackgroundAudioPlay(function () {
+      that.setData({
+        isPlayingMusic: true
+      })
+      app.globalData.g_isPlayingMusic = true;
+      app.globalData.g_currentMusicPostId = that.data.currentPostId;
+    });
+    wx.onBackgroundAudioPause(function () {
+      that.setData({
+        isPlayingMusic: false
+      })
+      app.globalData.g_isPlayingMusic = false;
+      app.globalData.g_currentMusicPostId = null;
+
+    });
   },
 
   onCollectionTap: function (event) {
@@ -76,55 +104,47 @@ Page({
       duration: 1000,
       icon: "success"
     })
-
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
+  onShareTap: function (event) {
+    var itemList =[
+      '分享给微信好友',
+      '分享到朋友圈',
+      '分享到QQ',
+      '分享到空间'
+    ]
+  wx.showActionSheet({
+    itemList: itemList,
+    itemColor:'#405f80',
+    success:function(res){
+      //res.cancel
+      //res.tapIndex
+      wx.showModal({
+        title: '用户'+itemList[rex.tapIndex],
+        content: '',
+      })
+    }
+  })
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
+  onMusicTap:function(event){
+    var isPlayingMusic = this.data.isPlayingMusic;
+    if (isPlayingMusic){
+      wx.pauseBackgroundAudio();
+      this.setData({
+        isPlayingMusic : false
+      })
+    }else
+    {
+      wx.playBackgroundAudio({
+        dataUrl: 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb.mp3?guid=ffffffff82def4af4b12b3cd9337d5e7&uin=346897220&vkey=6292F51E1E384E061FF02C31F716658E5C81F5594D561F2E88B854E81CAAB7806D5E4F103E55D33C16F3FAC506D1AB172DE8600B37E43FAD&fromtag=46',
+        title: '',
+        coverImgUrl: ''
+      })
+      this.setData({
+        isPlayingMusic : true
+      })
 
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
+    }
   }
 })
